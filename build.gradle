@@ -48,13 +48,6 @@ subprojects { Project subproject ->
 
     apply plugin: "groovy"
     apply plugin: "java"
-    apply plugin: "io.spring.dependency-management"
-
-    dependencyManagement {
-        imports {
-            mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
-        }
-    }
 
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
@@ -117,18 +110,22 @@ subprojects { Project subproject ->
     }
 
     dependencies {
+        implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+        annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
         documentation "org.codehaus.groovy:groovy-templates:$groovyVersion"
         documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 
-        testCompile "cglib:cglib-nodep:3.3.0"
-        testCompile "org.objenesis:objenesis:3.1"
+        testImplementation "cglib:cglib-nodep:3.3.0"
+        testImplementation "org.objenesis:objenesis:3.1"
+        testImplementation "io.micronaut:micronaut-inject-groovy"
+        testImplementation "io.micronaut:micronaut-inject"
 
-        testCompile("org.spockframework:spock-core:${spockVersion}") {
+        testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude module:'groovy-all'
         }
-        testCompile "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
-        testRuntime "ch.qos.logback:logback-classic:1.2.3"
-        testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
+        testRuntimeOnly "ch.qos.logback:logback-classic:1.2.3"
+        testImplementation "org.codehaus.groovy:groovy-test:$groovyVersion"
     }
 
     groovydoc {
@@ -152,3 +149,4 @@ allprojects {
     }
     apply from: rootProject.file('gradle/license.gradle')
 }
+

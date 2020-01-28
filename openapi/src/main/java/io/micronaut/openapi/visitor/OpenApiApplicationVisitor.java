@@ -66,7 +66,7 @@ import javax.annotation.processing.SupportedOptions;
     OpenApiApplicationVisitor.MICRONAUT_OPENAPI_TARGET_FILE,
     OpenApiApplicationVisitor.MICRONAUT_OPENAPI_ADDITIONAL_FILES,
     OpenApiApplicationVisitor.MICRONAUT_OPENAPI_CONFIG_FILE,
-    
+
 })
 public class OpenApiApplicationVisitor extends AbstractOpenApiVisitor implements TypeElementVisitor<OpenAPIDefinition, Object> {
     /**
@@ -241,10 +241,10 @@ public class OpenApiApplicationVisitor extends AbstractOpenApiVisitor implements
 
                 schemas.forEach((k, v) -> {
                   if (v.getName() == null) {
-                    v.setName(k); 
+                    v.setName(k);
                   }
                 });
-                
+
                 if (schemas != null && !schemas.isEmpty()) {
                     schemas.forEach(to::schema);
                 }
@@ -310,13 +310,32 @@ public class OpenApiApplicationVisitor extends AbstractOpenApiVisitor implements
     }
 
     private void renderViews(String title, String specFile, Path destinationDir, VisitorContext visitorContext) throws IOException {
-        String viewSpecification = System.getProperty(MICRONAUT_OPENAPI_VIEWS_SPEC);
-        OpenApiViewConfig cfg = OpenApiViewConfig.fromSpecification(viewSpecification, openApiProperties);
+        OpenApiViewConfig cfg = viewsSpec(visitorContext);
         if (cfg.isEnabled()) {
+            visitorContext.info(String.format("Rendering OpenAPI views to: %s", cfg.getSpecURL()));
             cfg.setTitle(title);
             cfg.setSpecFile(specFile);
             cfg.render(destinationDir.resolve("views"), visitorContext);
         }
+    }
+
+    private OpenApiViewConfig viewsSpec(VisitorContext visitorContext) {
+        visitorContext.info(String.format("Trying to find OpenAPI views spec: [%s]", visitorContext.getOptions()));
+        Optional<String> specFromSystem = Optional.ofNullable(System.getProperty(MICRONAUT_OPENAPI_VIEWS_SPEC));
+        return specFromSystem
+                .map(vs -> OpenApiViewConfig.fromSpecification(vs, openApiProperties))
+                .orElseGet(() -> {
+                    visitorContext.info(String.format("Trying to find OpenAPI view ENV: [%s]", visitorContext.getOptions().get(MICRONAUT_OPENAPI_VIEWS_SPEC)));
+                    if (visitorContext.getOptions().containsKey(MICRONAUT_OPENAPI_VIEWS_SPEC)
+                            && StringUtils.isNotEmpty(visitorContext.getOptions().get(MICRONAUT_OPENAPI_VIEWS_SPEC))) {
+                        visitorContext.info(String.format("OpenAPI view spec contains key?: [%s]", visitorContext.getOptions().containsKey(MICRONAUT_OPENAPI_VIEWS_SPEC)));
+                        if (visitorContext.getOptions().containsKey(MICRONAUT_OPENAPI_VIEWS_SPEC)) {
+                            visitorContext.info(String.format("OpenAPI view spec found: [%s]", visitorContext.getOptions()));
+                            return OpenApiViewConfig.fromSpecification(visitorContext.getOptions().get(MICRONAUT_OPENAPI_VIEWS_SPEC), openApiProperties);
+                        }
+                    }
+                    return null;
+                });
     }
 
     private static PropertyNamingStrategyBase fromName(String name) {

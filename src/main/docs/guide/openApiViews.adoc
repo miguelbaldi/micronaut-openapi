@@ -3,7 +3,7 @@ You can also use https://mrin9.github.io/RapiPdf/[RapiPdf] to generate a PDF fro
 
 The resources needed to render the views (javascript, css, ...) are loaded from CDNs: https://unpkg.com[unpkg.com] and https://fonts.googleapis.com/[fonts.googleapis.com].
 
-By default the generation of views is disabled. To turn it on you have to set the following system property `micronaut.openapi.views.spec`.
+By default the generation of views is disabled. To turn it on you have to set the following system property or compiler argument `micronaut.openapi.views.spec`.
 The string syntax is a series of comma-separated key-value pairs, to enable and configure the views. 
 
 .System Property
@@ -14,21 +14,32 @@ micronaut.openapi.views.spec=redoc.enabled=true,rapidoc.enabled=true,swagger-ui.
 
 For instance in Gradle for Kotlin projects:
 
-.Gradle
+.Gradle with kapt
+[source,groovy]
+----
+kapt {
+    arguments {
+        arg("micronaut.openapi.views.spec","redoc.enabled=true,rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop")
+    }
+}
+
+...
+----
+
+.Gradle with System property
 [source,shell]
 ----
 JAVA_TOOL_OPTIONS=-Dmicronaut.openapi.views.spec=redoc.enabled=true,rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop \
         ./gradlew --no-daemon clean assemble
 ----
-
 or in Gradle for Java projects:
 
 .Gradle
 [source,groovy]
 ----
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile){
     options.fork = true
-    options.forkOptions.jvmArgs << '-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop'
+    options.compilerArgs.add('-Amicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop')
 
     ...
 }

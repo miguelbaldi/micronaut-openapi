@@ -1,20 +1,26 @@
+plugins {
+    id 'java-library'
+}
+
 dependencies {
     annotationProcessor "io.micronaut:micronaut-inject-java"
     compileOnly "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
-    compile "io.micronaut:micronaut-http"
-    compile "io.micronaut:micronaut-validation"
-    compile "io.swagger.core.v3:swagger-core:$swaggerVersion"
-    compile "io.swagger.core.v3:swagger-models:$swaggerVersion"
-    compile "io.swagger.core.v3:swagger-annotations:$swaggerVersion"
+    implementation "io.micronaut:micronaut-http"
+    implementation "io.micronaut:micronaut-runtime"
+    implementation "io.micronaut:micronaut-validation"
+    api "io.swagger.core.v3:swagger-core:$swaggerVersion"
+    implementation "io.swagger.core.v3:swagger-models:$swaggerVersion"
+    implementation "io.swagger.core.v3:swagger-annotations:$swaggerVersion"
 
-    testCompile "io.micronaut:micronaut-runtime"
-    testCompile "io.micronaut:micronaut-security"
-    testCompile "io.micronaut:micronaut-inject-groovy"
-    testCompile "io.micronaut:micronaut-inject-java"
-    testCompile "io.micronaut:micronaut-inject-java-test"
-    testCompile "io.reactivex.rxjava2:rxjava:$rxJava2Version"
+    testImplementation "io.micronaut:micronaut-runtime"
+    testImplementation "io.micronaut:micronaut-inject"
+    testImplementation "io.micronaut:micronaut-security"
+    testImplementation "io.micronaut:micronaut-inject-groovy"
+    testImplementation "io.micronaut:micronaut-inject-java"
+    testImplementation "io.micronaut:micronaut-inject-java-test"
+    testImplementation "io.reactivex.rxjava2:rxjava:$rxJava2Version"
     if (org.gradle.internal.jvm.Jvm.current().getJavaVersion().isJava8()) {
-        testCompile files(org.gradle.internal.jvm.Jvm.current().toolsJar)
+        testImplementation files(org.gradle.internal.jvm.Jvm.current().toolsJar)
     }
 }
